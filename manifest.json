@@ -16,8 +16,18 @@
   ],
   
   "host_permissions": [
-    "https://*/*",
-    "http://*/*"
+    "https://i.meituan.com/*",
+    "https://cube.meituan.com/*",
+    "https://*.taobao.com/*",
+    "https://*.tmall.com/*",
+    "https://api.m.taobao.com/*",
+    "https://*.jd.com/*",
+    "https://api.m.jd.com/*",
+    "https://miaosha.jd.com/*",
+    "https://*.pinduoduo.com/*",
+    "https://*.yangkeduo.com/*",
+    "https://mobile.yangkeduo.com/*",
+    "https://api.yangkeduo.com/*"
   ],
   
   "background": {

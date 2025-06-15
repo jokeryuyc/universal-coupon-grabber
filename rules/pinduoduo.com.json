@@ -1,0 +1,249 @@
+{
+  "website": "pinduoduo.com",
+  "name": "拼多多",
+  "version": "1.0.0",
+  "description": "拼多多网站适配规则",
+  
+  "capturePatterns": [
+    {
+      "name": "seckill_order",
+      "description": "限时秒杀下单",
+      "urlPattern": "/api/carts/checkout",
+      "method": "POST",
+      "priority": 0.95,
+      "category": "seckill"
+    },
+    {
+      "name": "flash_sale",
+      "description": "闪购下单",
+      "urlPattern": "/api/oak/integration/render",
+      "method": "POST",
+      "priority": 0.9,
+      "category": "seckill"
+    },
+    {
+      "name": "coupon_receive",
+      "description": "优惠券领取",
+      "urlPattern": "/api/promotion/coupon/receive",
+      "method": "POST",
+      "priority": 0.85,
+      "category": "coupon"
+    },
+    {
+      "name": "group_buy",
+      "description": "拼团购买",
+      "urlPattern": "/api/carts/add",
+      "method": "POST",
+      "priority": 0.8,
+      "category": "group"
+    },
+    {
+      "name": "lottery_draw",
+      "description": "抽奖活动",
+      "urlPattern": "/api/lottery/draw",
+      "method": "POST",
+      "priority": 0.75,
+      "category": "lottery"
+    },
+    {
+      "name": "sign_in",
+      "description": "签到活动",
+      "urlPattern": "/api/checkin",
+      "method": "POST",
+      "priority": 0.7,
+      "category": "checkin"
+    },
+    {
+      "name": "bargain_help",
+      "description": "砍价助力",
+      "urlPattern": "/api/bargain/help",
+      "method": "POST",
+      "priority": 0.65,
+      "category": "bargain"
+    }
+  ],
+  
+  "signatureConfig": {
+    "type": "pdd_sign",
+    "required": true,
+    "fingerprintMethod": "window.PDD.getFingerprint",
+    "signMethod": "window.PDD.sign",
+    "antiTokenMethod": "window._nano_fp",
+    "headers": {
+      "anti-content": "signature",
+      "verifyauthtoken": "token",
+      "accesstoken": "access_token"
+    },
+    "requiredCookies": ["PDDAccessToken", "pdd_user_id", "pdd_user_uin"]
+  },
+  
+  "requestConfig": {
+    "defaultHeaders": {
+      "Content-Type": "application/json;charset=UTF-8",
+      "Accept": "application/json, text/plain, */*",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.0",
+      "Referer": "https://mobile.yangkeduo.com/",
+      "Origin": "https://mobile.yangkeduo.com",
+      "X-Requested-With": "XMLHttpRequest"
+    },
+    "timeout": 6000,
+    "retryDelay": 150
+  },
+  
+  "successConditions": [
+    {
+      "type": "response_code",
+      "value": 200,
+      "weight": 0.3
+    },
+    {
+      "type": "response_json_path",
+      "path": "success",
+      "value": true,
+      "weight": 0.4
+    },
+    {
+      "type": "response_json_path",
+      "path": "error_code",
+      "value": 0,
+      "weight": 0.3
+    }
+  ],
+  
+  "failureConditions": [
+    {
+      "type": "response_body_contains",
+      "value": "商品已抢完",
+      "action": "stop"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "活动未开始",
+      "action": "wait"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "库存不足",
+      "action": "stop"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "请求过于频繁",
+      "action": "retry_with_delay"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "系统繁忙",
+      "action": "retry_with_delay"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "需要验证",
+      "action": "stop"
+    },
+    {
+      "type": "response_json_path",
+      "path": "error_code",
+      "value": 429,
+      "action": "retry_with_delay"
+    }
+  ],
+  
+  "timeSync": {
+    "enabled": true,
+    "syncUrl": "https://api.yangkeduo.com/api/server/time",
+    "syncInterval": 25000,
+    "offsetKey": "result.server_time",
+    "requestParams": {
+      "pdduid": "0"
+    }
+  },
+  
+  "antiDetection": {
+    "randomDelay": {
+      "enabled": true,
+      "min": 80,
+      "max": 250
+    },
+    "userAgentRotation": {
+      "enabled": true,
+      "agents": [
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.0",
+        "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+      ]
+    },
+    "headerRandomization": {
+      "enabled": true,
+      "headers": ["Accept-Language", "Accept-Encoding"]
+    },
+    "fingerprintRotation": {
+      "enabled": true,
+      "interval": 300000
+    }
+  },
+  
+  "specialHandling": {
+    "seckillMode": {
+      "enabled": true,
+      "advanceTime": 200,
+      "maxConcurrency": 2,
+      "preloadRequests": [
+        {
+          "url": "/api/carts/v2/load",
+          "method": "GET",
+          "timing": -5000
+        }
+      ]
+    },
+    "groupBuyMode": {
+      "enabled": true,
+      "checkGroupStatus": true,
+      "maxWaitTime": 30000
+    },
+    "bargainMode": {
+      "enabled": true,
+      "autoHelp": false,
+      "maxHelpTimes": 3
+    }
+  },
+  
+  "errorHandling": {
+    "retryStrategies": {
+      "network_error": {
+        "maxRetries": 6,
+        "backoffMultiplier": 1.3,
+        "initialDelay": 150
+      },
+      "server_busy": {
+        "maxRetries": 8,
+        "backoffMultiplier": 1.8,
+        "initialDelay": 400
+      },
+      "rate_limit": {
+        "maxRetries": 4,
+        "backoffMultiplier": 2.5,
+        "initialDelay": 800
+      },
+      "auth_error": {
+        "maxRetries": 2,
+        "backoffMultiplier": 1.0,
+        "initialDelay": 1000
+      }
+    }
+  },
+  
+  "monitoring": {
+    "performanceTracking": {
+      "enabled": true,
+      "metrics": ["response_time", "success_rate", "error_rate"]
+    },
+    "alerting": {
+      "enabled": true,
+      "thresholds": {
+        "error_rate": 0.5,
+        "response_time": 3000
+      }
+    }
+  }
+}

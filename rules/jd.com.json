@@ -1,0 +1,209 @@
+{
+  "website": "jd.com",
+  "name": "京东",
+  "version": "1.0.0",
+  "description": "京东网站适配规则",
+  
+  "capturePatterns": [
+    {
+      "name": "seckill_order",
+      "description": "秒杀下单",
+      "urlPattern": "/seckill/seckill.action",
+      "method": "POST",
+      "priority": 0.95,
+      "category": "seckill"
+    },
+    {
+      "name": "miaosha_submit",
+      "description": "秒杀提交订单",
+      "urlPattern": "/miaosha/order/submitOrderWithSkuNum",
+      "method": "POST",
+      "priority": 0.9,
+      "category": "seckill"
+    },
+    {
+      "name": "coupon_receive",
+      "description": "优惠券领取",
+      "urlPattern": "/coupon/receiveCoupon",
+      "method": "POST",
+      "priority": 0.85,
+      "category": "coupon"
+    },
+    {
+      "name": "flash_order",
+      "description": "闪购下单",
+      "urlPattern": "/order/submitOrder",
+      "method": "POST",
+      "priority": 0.8,
+      "category": "order"
+    },
+    {
+      "name": "appointment_submit",
+      "description": "预约提交",
+      "urlPattern": "/yuyue/yuyueSubmit",
+      "method": "POST",
+      "priority": 0.75,
+      "category": "appointment"
+    },
+    {
+      "name": "lottery_draw",
+      "description": "抽奖活动",
+      "urlPattern": "/active/draw",
+      "method": "POST",
+      "priority": 0.7,
+      "category": "lottery"
+    }
+  ],
+  
+  "signatureConfig": {
+    "type": "jd_sign",
+    "required": true,
+    "fingerprintMethod": "window._JdJrTdRiskFpInfo",
+    "signMethod": "window.jdSign",
+    "tokenMethod": "window._JD_DEVICE_FINGERPRINT_",
+    "headers": {
+      "x-rp-client": "h5_1.0.0",
+      "x-referer-page": "https://m.jd.com",
+      "x-requested-with": "XMLHttpRequest"
+    },
+    "requiredCookies": ["__jdu", "__jdv", "__jda", "shshshfpa", "shshshfpb"]
+  },
+  
+  "requestConfig": {
+    "defaultHeaders": {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Accept": "application/json, text/javascript, */*; q=0.01",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.0(0x18000029) NetType/WIFI Language/zh_CN",
+      "Referer": "https://m.jd.com/",
+      "X-Requested-With": "XMLHttpRequest"
+    },
+    "timeout": 8000,
+    "retryDelay": 120
+  },
+  
+  "successConditions": [
+    {
+      "type": "response_code",
+      "value": 200,
+      "weight": 0.3
+    },
+    {
+      "type": "response_body_contains",
+      "value": "success",
+      "weight": 0.4
+    },
+    {
+      "type": "response_json_path",
+      "path": "success",
+      "value": true,
+      "weight": 0.3
+    }
+  ],
+  
+  "failureConditions": [
+    {
+      "type": "response_body_contains",
+      "value": "商品已售完",
+      "action": "stop"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "活动未开始",
+      "action": "wait"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "请稍后再试",
+      "action": "retry_with_delay"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "系统繁忙",
+      "action": "retry_with_delay"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "验证码",
+      "action": "stop"
+    },
+    {
+      "type": "response_code",
+      "value": 403,
+      "action": "stop"
+    }
+  ],
+  
+  "timeSync": {
+    "enabled": true,
+    "syncUrl": "https://api.m.jd.com/client.action?functionId=queryServerTime",
+    "syncInterval": 30000,
+    "offsetKey": "currentTime2",
+    "requestParams": {
+      "functionId": "queryServerTime",
+      "body": "{}",
+      "appid": "item-v3",
+      "clientVersion": "1.0.0"
+    }
+  },
+  
+  "antiDetection": {
+    "randomDelay": {
+      "enabled": true,
+      "min": 100,
+      "max": 300
+    },
+    "userAgentRotation": {
+      "enabled": true,
+      "agents": [
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15",
+        "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36",
+        "Mozilla/5.0 (iPhone; CPU iPhone OS 13_0 like Mac OS X) AppleWebKit/605.1.15"
+      ]
+    },
+    "headerRandomization": {
+      "enabled": true,
+      "headers": ["Accept-Language", "Accept-Encoding", "Cache-Control"]
+    },
+    "cookieValidation": {
+      "enabled": true,
+      "requiredCookies": ["__jdu", "__jdv"]
+    }
+  },
+  
+  "specialHandling": {
+    "seckillMode": {
+      "enabled": true,
+      "advanceTime": 300,
+      "maxConcurrency": 3,
+      "specialHeaders": {
+        "Origin": "https://miaosha.jd.com",
+        "Sec-Fetch-Site": "same-origin"
+      }
+    },
+    "appointmentMode": {
+      "enabled": true,
+      "checkInterval": 1000,
+      "maxCheckTimes": 60
+    }
+  },
+  
+  "errorHandling": {
+    "retryStrategies": {
+      "network_error": {
+        "maxRetries": 5,
+        "backoffMultiplier": 1.5,
+        "initialDelay": 200
+      },
+      "server_busy": {
+        "maxRetries": 10,
+        "backoffMultiplier": 2.0,
+        "initialDelay": 500
+      },
+      "rate_limit": {
+        "maxRetries": 3,
+        "backoffMultiplier": 3.0,
+        "initialDelay": 1000
+      }
+    }
+  }
+}

@@ -25,8 +25,24 @@
           token: typeof window._tb_token_ !== 'undefined'
         },
         jd: {
-          available: typeof window.jdSign !== 'undefined' || 
-                    typeof window._JdJrTdRiskFpInfo !== 'undefined'
+          available: typeof window._JdJrTdRiskFpInfo !== 'undefined' ||
+                    typeof window._JD_DEVICE_FINGERPRINT_ !== 'undefined' ||
+                    typeof window.jdSign !== 'undefined',
+          methods: {
+            riskFp: typeof window._JdJrTdRiskFpInfo !== 'undefined',
+            deviceFp: typeof window._JD_DEVICE_FINGERPRINT_ !== 'undefined',
+            sign: typeof window.jdSign === 'function'
+          }
+        },
+        pdd: {
+          available: typeof window.PDD !== 'undefined' ||
+                    typeof window._nano_fp !== 'undefined' ||
+                    typeof window.PDDAccessToken !== 'undefined',
+          methods: {
+            sign: typeof window.PDD?.sign === 'function',
+            getFingerprint: typeof window.PDD?.getFingerprint === 'function',
+            nanoFp: typeof window._nano_fp !== 'undefined'
+          }
         }
       };
     },
@@ -87,10 +103,96 @@
     
     // 京东签名
     async jdSign(requestData) {
-      // 京东签名逻辑（待实现）
-      return {
-        timestamp: Date.now()
-      };
+      try {
+        const result = {
+          timestamp: Date.now()
+        };
+
+        // 获取设备指纹
+        if (typeof window._JD_DEVICE_FINGERPRINT_ !== 'undefined') {
+          result.deviceFingerprint = window._JD_DEVICE_FINGERPRINT_;
+        }
+
+        // 获取风险指纹
+        if (typeof window._JdJrTdRiskFpInfo !== 'undefined') {
+          result.riskFingerprint = window._JdJrTdRiskFpInfo;
+        }
+
+        // 尝试调用签名函数
+        if (typeof window.jdSign === 'function') {
+          const signResult = await window.jdSign(requestData);
+          result.signature = signResult;
+        }
+
+        // 获取必要的Cookie
+        const cookies = ['__jdu', '__jdv', '__jda', 'shshshfpa', 'shshshfpb'];
+        result.cookies = {};
+        cookies.forEach(name => {
+          const value = this.getCookie(name);
+          if (value) {
+            result.cookies[name] = value;
+          }
+        });
+
+        return result;
+      } catch (error) {
+        console.error('JD signature failed:', error);
+        throw error;
+      }
+    },
+
+    // 拼多多签名
+    async pddSign(requestData) {
+      try {
+        const result = {
+          timestamp: Date.now()
+        };
+
+        // 获取反作弊token
+        if (typeof window._nano_fp !== 'undefined') {
+          result.nanoFp = window._nano_fp;
+        }
+
+        // 获取访问token
+        const accessToken = this.getCookie('PDDAccessToken') || window.PDDAccessToken;
+        if (accessToken) {
+          result.accessToken = accessToken;
+        }
+
+        // 获取用户ID
+        const userId = this.getCookie('pdd_user_id');
+        if (userId) {
+          result.userId = userId;
+        }
+
+        // 尝试调用PDD签名函数
+        if (typeof window.PDD !== 'undefined') {
+          if (typeof window.PDD.sign === 'function') {
+            const signResult = await window.PDD.sign(requestData);
+            result.antiContent = signResult;
+          }
+
+          if (typeof window.PDD.getFingerprint === 'function') {
+            const fingerprint = await window.PDD.getFingerprint();
+            result.fingerprint = fingerprint;
+          }
+        }
+
+        return result;
+      } catch (error) {
+        console.error('PDD signature failed:', error);
+        throw error;
+      }
+    },
+
+    // 获取Cookie值
+    getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+      }
+      return null;
     },
     
     // 获取页面信息
@@ -153,6 +255,11 @@
           response.data = await bridge.jdSign(data);
           response.success = true;
           break;
+
+        case 'UCG_PDD_SIGN':
+          response.data = await bridge.pddSign(data);
+          response.success = true;
+          break;
           
         case 'UCG_GET_PAGE_INFO':
           response.data = bridge.getPageInfo();
@@ -196,6 +303,13 @@
   } else if (window.location.hostname.includes('taobao')) {
     // 淘宝特定的监听逻辑
     monitorTaobaoRequests();
+  } else if (window.location.hostname.includes('jd.com')) {
+    // 京东特定的监听逻辑
+    monitorJDRequests();
+  } else if (window.location.hostname.includes('pinduoduo.com') ||
+             window.location.hostname.includes('yangkeduo.com')) {
+    // 拼多多特定的监听逻辑
+    monitorPDDRequests();
   }
   
   function monitorMeituanRequests() {
@@ -214,8 +328,38 @@
       /\/mtop\.ju\.seckill\.order\.submit/,
       /\/mtop\.marketing\.coupon\.get/
     ];
-    
+
     // 这里可以添加更精细的监听逻辑
+  }
+
+  function monitorJDRequests() {
+    // 监听京东特定的请求模式
+    const patterns = [
+      /\/seckill\/seckill\.action/,
+      /\/miaosha\/order\/submitOrderWithSkuNum/,
+      /\/coupon\/receiveCoupon/,
+      /\/order\/submitOrder/,
+      /\/yuyue\/yuyueSubmit/
+    ];
+
+    // 这里可以添加更精细的监听逻辑
+    console.log('JD request monitoring started');
+  }
+
+  function monitorPDDRequests() {
+    // 监听拼多多特定的请求模式
+    const patterns = [
+      /\/api\/carts\/checkout/,
+      /\/api\/oak\/integration\/render/,
+      /\/api\/promotion\/coupon\/receive/,
+      /\/api\/carts\/add/,
+      /\/api\/lottery\/draw/,
+      /\/api\/checkin/,
+      /\/api\/bargain\/help/
+    ];
+
+    // 这里可以添加更精细的监听逻辑
+    console.log('PDD request monitoring started');
   }
   
   // 定期检查页面状态变化

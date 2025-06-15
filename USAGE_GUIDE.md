@@ -100,6 +100,8 @@
 | 美团 | meituan.com | 秒杀券、闪购、团购 | H5guard |
 | 淘宝 | taobao.com | 聚划算、优惠券 | mtop |
 | 天猫 | tmall.com | 优惠券、直播券 | mtop |
+| 京东 | jd.com | 秒杀、优惠券、闪购、预约 | JD风险指纹 |
+| 拼多多 | pinduoduo.com | 限时秒杀、拼团、砍价、抽奖 | PDD反作弊 |
 
 ### 美团网站使用
 
@@ -132,6 +134,56 @@
 **注意事项**:
 - 需要登录状态
 - 某些活动需要特定的token
+
+### 京东网站使用
+
+**特点**: 使用JD风险指纹和设备指纹机制
+
+**常见API模式**:
+```
+/seckill/seckill.action                    # 秒杀下单
+/miaosha/order/submitOrderWithSkuNum       # 秒杀提交订单
+/coupon/receiveCoupon                      # 优惠券领取
+/order/submitOrder                         # 闪购下单
+/yuyue/yuyueSubmit                         # 预约提交
+```
+
+**使用步骤**:
+1. 访问京东秒杀页面（如：https://miaosha.jd.com/）
+2. 开启插件监听
+3. 点击抢购按钮触发发现
+4. 配置执行时间并保存
+
+**注意事项**:
+- 需要登录京东账号
+- 某些商品需要预约
+- 建议使用手机版页面（m.jd.com）
+
+### 拼多多网站使用
+
+**特点**: 使用PDD反作弊机制和访问token
+
+**常见API模式**:
+```
+/api/carts/checkout                        # 限时秒杀下单
+/api/oak/integration/render                # 闪购下单
+/api/promotion/coupon/receive              # 优惠券领取
+/api/carts/add                            # 拼团购买
+/api/lottery/draw                         # 抽奖活动
+/api/checkin                              # 签到活动
+/api/bargain/help                         # 砍价助力
+```
+
+**使用步骤**:
+1. 访问拼多多活动页面（如：https://mobile.yangkeduo.com/）
+2. 开启插件监听
+3. 参与相关活动触发发现
+4. 配置执行时间并保存
+
+**注意事项**:
+- 需要登录拼多多账号
+- 某些活动有参与次数限制
+- 建议使用移动版页面
 
 ## ⚙️ 高级配置
 
