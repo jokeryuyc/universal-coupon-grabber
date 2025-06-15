@@ -6,7 +6,7 @@
 
 1. **下载项目**
    ```bash
-   git clone https://github.com/your-repo/universal-coupon-grabber.git
+   git clone https://github.com/jokeryuyc/universal-coupon-grabber.git
    ```
 
 2. **加载到Chrome**
@@ -327,8 +327,9 @@
 
 ## 📞 获取帮助
 
-- **GitHub Issues**: 报告bug和功能请求
-- **Wiki文档**: 详细的技术文档
+- **GitHub Issues**: https://github.com/jokeryuyc/universal-coupon-grabber/issues
+- **项目主页**: https://github.com/jokeryuyc/universal-coupon-grabber
+- **Wiki文档**: https://github.com/jokeryuyc/universal-coupon-grabber/wiki
 - **社区讨论**: 使用经验分享
 
 记住：本工具仅供学习研究使用，请合理合法使用！

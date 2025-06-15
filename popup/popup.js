@@ -92,7 +92,7 @@ class PopupManager {
     });
     
     document.getElementById('helpBtn').addEventListener('click', () => {
-      chrome.tabs.create({ url: 'https://github.com/your-repo/help' });
+      chrome.tabs.create({ url: 'https://github.com/jokeryuyc/universal-coupon-grabber/wiki' });
     });
     
     document.getElementById('aboutBtn').addEventListener('click', () => {

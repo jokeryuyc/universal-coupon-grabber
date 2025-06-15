@@ -42,7 +42,7 @@
 
 1. 下载项目代码
 ```bash
-git clone https://github.com/your-repo/universal-coupon-grabber.git
+git clone https://github.com/jokeryuyc/universal-coupon-grabber.git
 cd universal-coupon-grabber
 ```
 
@@ -208,6 +208,8 @@ class ExampleSignatureAdapter extends BaseSignatureAdapter {
 3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
 4. 推送到分支 (`git push origin feature/AmazingFeature`)
 5. 开启 Pull Request
+
+项目地址：https://github.com/jokeryuyc/universal-coupon-grabber
 
 ## 📄 许可证
 
