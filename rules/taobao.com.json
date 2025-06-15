@@ -1,0 +1,112 @@
+{
+  "website": "taobao.com",
+  "name": "淘宝",
+  "version": "1.0.0",
+  "description": "淘宝网站适配规则",
+  
+  "capturePatterns": [
+    {
+      "name": "juhuasuan_seckill",
+      "description": "聚划算秒杀",
+      "urlPattern": "/mtop.ju.seckill.order.submit",
+      "method": "POST",
+      "priority": 0.9,
+      "category": "seckill"
+    },
+    {
+      "name": "tmall_coupon",
+      "description": "天猫优惠券",
+      "urlPattern": "/mtop.marketing.coupon.get",
+      "method": "POST",
+      "priority": 0.85,
+      "category": "coupon"
+    },
+    {
+      "name": "taobao_order",
+      "description": "淘宝下单",
+      "urlPattern": "/mtop.trade.order.create",
+      "method": "POST",
+      "priority": 0.8,
+      "category": "order"
+    },
+    {
+      "name": "live_room_coupon",
+      "description": "直播间优惠券",
+      "urlPattern": "/mtop.taobao.live.coupon.get",
+      "method": "POST",
+      "priority": 0.75,
+      "category": "coupon"
+    }
+  ],
+  
+  "signatureConfig": {
+    "type": "mtop",
+    "required": true,
+    "tokenMethod": "window._tb_token_",
+    "headers": {
+      "_tb_token_": "token",
+      "x-sign": "signature"
+    }
+  },
+  
+  "requestConfig": {
+    "defaultHeaders": {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Accept": "application/json",
+      "Referer": "https://www.taobao.com/"
+    },
+    "timeout": 8000,
+    "retryDelay": 150
+  },
+  
+  "successConditions": [
+    {
+      "type": "response_body_contains",
+      "value": "SUCCESS",
+      "weight": 0.5
+    },
+    {
+      "type": "response_body_path",
+      "path": "ret[0]",
+      "value": "SUCCESS::调用成功",
+      "weight": 0.5
+    }
+  ],
+  
+  "failureConditions": [
+    {
+      "type": "response_body_contains",
+      "value": "FAIL_SYS_TOKEN_EXOIRED",
+      "action": "refresh_token"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "库存不足",
+      "action": "stop"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "活动未开始",
+      "action": "wait"
+    }
+  ],
+  
+  "timeSync": {
+    "enabled": true,
+    "syncUrl": "http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp",
+    "syncInterval": 60000,
+    "offsetKey": "data.t"
+  },
+  
+  "antiDetection": {
+    "randomDelay": {
+      "enabled": true,
+      "min": 80,
+      "max": 300
+    },
+    "sessionRotation": {
+      "enabled": true,
+      "interval": 300000
+    }
+  }
+}

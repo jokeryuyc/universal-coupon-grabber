@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Coupon Grabber</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <header class="header">
+      <div class="logo">
+        <img src="../icons/icon32.png" alt="UCG">
+        <h1>通用抢券助手</h1>
+      </div>
+      <div class="status-indicator" id="statusIndicator">
+        <span class="status-dot"></span>
+        <span class="status-text">就绪</span>
+      </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+      <!-- 快速操作面板 -->
+      <section class="quick-actions">
+        <button class="action-btn primary" id="startCaptureBtn">
+          <span class="icon">🎯</span>
+          开始捕获
+        </button>
+        <button class="action-btn secondary" id="createTaskBtn">
+          <span class="icon">➕</span>
+          新建任务
+        </button>
+        <button class="action-btn secondary" id="importTaskBtn">
+          <span class="icon">📥</span>
+          导入任务
+        </button>
+      </section>
+
+      <!-- 任务列表 -->
+      <section class="task-section">
+        <div class="section-header">
+          <h2>任务列表</h2>
+          <div class="task-stats" id="taskStats">
+            <span class="stat-item">总计: <span id="totalTasks">0</span></span>
+            <span class="stat-item">运行中: <span id="runningTasks">0</span></span>
+          </div>
+        </div>
+        
+        <div class="task-list" id="taskList">
+          <!-- 任务项将通过JavaScript动态生成 -->
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">📋</div>
+            <p>暂无任务</p>
+            <p class="empty-hint">点击"开始捕获"自动发现任务，或手动创建新任务</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 实时日志 -->
+      <section class="log-section">
+        <div class="section-header">
+          <h3>实时日志</h3>
+          <button class="clear-btn" id="clearLogBtn">清空</button>
+        </div>
+        <div class="log-container" id="logContainer">
+          <div class="log-item info">
+            <span class="log-time">12:00:00</span>
+            <span class="log-message">插件已启动，等待操作...</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部操作栏 -->
+    <footer class="footer">
+      <button class="footer-btn" id="settingsBtn">
+        <span class="icon">⚙️</span>
+        设置
+      </button>
+      <button class="footer-btn" id="helpBtn">
+        <span class="icon">❓</span>
+        帮助
+      </button>
+      <button class="footer-btn" id="aboutBtn">
+        <span class="icon">ℹ️</span>
+        关于
+      </button>
+    </footer>
+  </div>
+
+  <!-- 任务创建/编辑模态框 -->
+  <div class="modal" id="taskModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">创建新任务</h3>
+        <button class="close-btn" id="closeModalBtn">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <form id="taskForm">
+          <div class="form-group">
+            <label for="taskName">任务名称</label>
+            <input type="text" id="taskName" placeholder="请输入任务名称" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskUrl">请求URL</label>
+            <input type="url" id="taskUrl" placeholder="https://..." required>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskMethod">请求方法</label>
+            <select id="taskMethod">
+              <option value="POST">POST</option>
+              <option value="GET">GET</option>
+              <option value="PUT">PUT</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="executeTime">执行时间</label>
+            <input type="datetime-local" id="executeTime">
+          </div>
+          
+          <div class="form-group">
+            <label for="maxAttempts">最大尝试次数</label>
+            <input type="number" id="maxAttempts" value="5" min="1" max="100">
+          </div>
+          
+          <div class="form-group">
+            <label for="intervalMs">重试间隔(毫秒)</label>
+            <input type="number" id="intervalMs" value="100" min="10" max="10000">
+          </div>
+          
+          <div class="form-group">
+            <label for="requestHeaders">请求头 (JSON格式)</label>
+            <textarea id="requestHeaders" placeholder='{"Content-Type": "application/json"}'></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="requestBody">请求体 (JSON格式)</label>
+            <textarea id="requestBody" placeholder='{"key": "value"}'></textarea>
+          </div>
+        </form>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn secondary" id="cancelBtn">取消</button>
+        <button type="button" class="btn primary" id="testBtn">测试</button>
+        <button type="submit" class="btn primary" id="saveBtn" form="taskForm">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 建议任务模态框 -->
+  <div class="modal" id="suggestionModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>发现新任务</h3>
+        <button class="close-btn" id="closeSuggestionBtn">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="suggestion-info">
+          <p>检测到可能的抢券/报名请求，是否创建任务？</p>
+          <div class="suggestion-details" id="suggestionDetails">
+            <!-- 建议任务详情将通过JavaScript填充 -->
+          </div>
+        </div>
+      </div>
+      
+      <div class="modal-footer">
+        <button type="button" class="btn secondary" id="ignoreSuggestionBtn">忽略</button>
+        <button type="button" class="btn primary" id="acceptSuggestionBtn">创建任务</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

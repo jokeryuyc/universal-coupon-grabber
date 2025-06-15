@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Coupon Grabber - 设置</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 头部 -->
+    <header class="header">
+      <div class="logo">
+        <img src="../icons/icon48.png" alt="UCG">
+        <h1>通用抢券助手 - 设置</h1>
+      </div>
+      <div class="version">v1.0.0</div>
+    </header>
+
+    <!-- 导航标签 -->
+    <nav class="nav-tabs">
+      <button class="tab-btn active" data-tab="general">常规设置</button>
+      <button class="tab-btn" data-tab="execution">执行配置</button>
+      <button class="tab-btn" data-tab="websites">网站管理</button>
+      <button class="tab-btn" data-tab="advanced">高级选项</button>
+      <button class="tab-btn" data-tab="about">关于</button>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <main class="main-content">
+      <!-- 常规设置 -->
+      <section class="tab-content active" id="general">
+        <h2>常规设置</h2>
+        
+        <div class="setting-group">
+          <h3>界面设置</h3>
+          <div class="setting-item">
+            <label for="theme">主题</label>
+            <select id="theme">
+              <option value="light">浅色</option>
+              <option value="dark">深色</option>
+              <option value="auto">跟随系统</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label for="language">语言</label>
+            <select id="language">
+              <option value="zh-CN">简体中文</option>
+              <option value="en-US">English</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>功能设置</h3>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="autoCapture">
+              <span class="checkmark"></span>
+              自动开启网络捕获
+            </label>
+            <p class="setting-desc">访问支持的网站时自动开始监听网络请求</p>
+          </div>
+          
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableNotifications">
+              <span class="checkmark"></span>
+              启用通知
+            </label>
+            <p class="setting-desc">任务执行完成时显示桌面通知</p>
+          </div>
+          
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableSounds">
+              <span class="checkmark"></span>
+              启用声音提醒
+            </label>
+            <p class="setting-desc">任务执行成功或失败时播放提示音</p>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>日志设置</h3>
+          <div class="setting-item">
+            <label for="logLevel">日志级别</label>
+            <select id="logLevel">
+              <option value="debug">调试</option>
+              <option value="info">信息</option>
+              <option value="warning">警告</option>
+              <option value="error">错误</option>
+            </select>
+          </div>
+          
+          <div class="setting-item">
+            <label for="maxLogEntries">最大日志条数</label>
+            <input type="number" id="maxLogEntries" min="100" max="10000" step="100" value="1000">
+          </div>
+        </div>
+      </section>
+
+      <!-- 执行配置 -->
+      <section class="tab-content" id="execution">
+        <h2>执行配置</h2>
+        
+        <div class="setting-group">
+          <h3>默认执行参数</h3>
+          <div class="setting-item">
+            <label for="defaultTimeout">默认超时时间 (毫秒)</label>
+            <input type="number" id="defaultTimeout" min="1000" max="30000" step="1000" value="5000">
+          </div>
+          
+          <div class="setting-item">
+            <label for="defaultRetryAttempts">默认重试次数</label>
+            <input type="number" id="defaultRetryAttempts" min="1" max="100" value="5">
+          </div>
+          
+          <div class="setting-item">
+            <label for="defaultRetryInterval">默认重试间隔 (毫秒)</label>
+            <input type="number" id="defaultRetryInterval" min="10" max="10000" step="10" value="100">
+          </div>
+          
+          <div class="setting-item">
+            <label for="defaultAdvanceTime">默认提前量 (毫秒)</label>
+            <input type="number" id="defaultAdvanceTime" min="0" max="5000" step="50" value="500">
+            <p class="setting-desc">任务执行前的提前启动时间，用于补偿网络延迟</p>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>时间同步</h3>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableTimeSync">
+              <span class="checkmark"></span>
+              启用时间同步
+            </label>
+            <p class="setting-desc">与服务器时间同步，确保执行时间准确</p>
+          </div>
+          
+          <div class="setting-item">
+            <label for="timeSyncInterval">同步间隔 (秒)</label>
+            <input type="number" id="timeSyncInterval" min="10" max="300" value="30">
+          </div>
+          
+          <div class="setting-item">
+            <button class="btn secondary" id="syncTimeNow">立即同步时间</button>
+            <span id="timeSyncStatus" class="status-text">未同步</span>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>网络设置</h3>
+          <div class="setting-item">
+            <label for="userAgent">自定义User-Agent</label>
+            <input type="text" id="userAgent" placeholder="留空使用默认">
+          </div>
+          
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableProxy">
+              <span class="checkmark"></span>
+              启用代理支持
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- 网站管理 -->
+      <section class="tab-content" id="websites">
+        <h2>网站管理</h2>
+        
+        <div class="setting-group">
+          <h3>支持的网站</h3>
+          <div class="website-list" id="websiteList">
+            <!-- 网站列表将通过JavaScript动态生成 -->
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>自定义规则</h3>
+          <div class="setting-item">
+            <label for="customRules">自定义网站规则 (JSON格式)</label>
+            <textarea id="customRules" rows="10" placeholder='{"website": "example.com", "capturePatterns": []}'></textarea>
+          </div>
+          
+          <div class="setting-item">
+            <button class="btn primary" id="saveCustomRules">保存自定义规则</button>
+            <button class="btn secondary" id="validateRules">验证规则</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 高级选项 -->
+      <section class="tab-content" id="advanced">
+        <h2>高级选项</h2>
+        
+        <div class="setting-group">
+          <h3>调试选项</h3>
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableDebugMode">
+              <span class="checkmark"></span>
+              启用调试模式
+            </label>
+            <p class="setting-desc">显示详细的调试信息，仅用于开发和故障排除</p>
+          </div>
+          
+          <div class="setting-item">
+            <label class="checkbox-label">
+              <input type="checkbox" id="enableConsoleLog">
+              <span class="checkmark"></span>
+              启用控制台日志
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>数据管理</h3>
+          <div class="setting-item">
+            <button class="btn secondary" id="exportData">导出数据</button>
+            <button class="btn secondary" id="importData">导入数据</button>
+            <input type="file" id="importFile" accept=".json" style="display: none;">
+          </div>
+          
+          <div class="setting-item">
+            <button class="btn danger" id="clearAllData">清空所有数据</button>
+            <p class="setting-desc warning">此操作将删除所有任务、日志和设置，无法恢复！</p>
+          </div>
+        </div>
+
+        <div class="setting-group">
+          <h3>存储信息</h3>
+          <div class="storage-info" id="storageInfo">
+            <div class="storage-item">
+              <span>已使用存储空间:</span>
+              <span id="storageUsed">计算中...</span>
+            </div>
+            <div class="storage-item">
+              <span>存储配额:</span>
+              <span id="storageQuota">计算中...</span>
+            </div>
+            <div class="storage-item">
+              <span>使用率:</span>
+              <span id="storagePercentage">计算中...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 关于 -->
+      <section class="tab-content" id="about">
+        <h2>关于</h2>
+        
+        <div class="about-content">
+          <div class="about-section">
+            <h3>Universal Coupon Grabber</h3>
+            <p>版本: 1.0.0</p>
+            <p>通用抢券浏览器插件，支持各大网站的优惠券抢购和活动报名自动化。</p>
+          </div>
+
+          <div class="about-section">
+            <h3>核心特性</h3>
+            <ul>
+              <li>🎯 智能网络请求监听和自动发现</li>
+              <li>🔐 多网站签名适配和反反作弊</li>
+              <li>⏰ 毫秒级精确定时执行</li>
+              <li>🔄 智能重试和错误处理</li>
+              <li>📊 实时监控和详细日志</li>
+            </ul>
+          </div>
+
+          <div class="about-section">
+            <h3>技术架构</h3>
+            <p>基于Chrome Extension Manifest V3，采用Service Worker + Content Scripts架构，结合了RequestManager的任务调度能力和美团抢券工具的网络监听技术。</p>
+          </div>
+
+          <div class="about-section">
+            <h3>开源信息</h3>
+            <p>本项目基于MIT许可证开源</p>
+            <div class="links">
+              <a href="https://github.com/your-repo/universal-coupon-grabber" target="_blank">GitHub仓库</a>
+              <a href="https://github.com/your-repo/universal-coupon-grabber/issues" target="_blank">问题反馈</a>
+              <a href="https://github.com/your-repo/universal-coupon-grabber/wiki" target="_blank">使用文档</a>
+            </div>
+          </div>
+
+          <div class="about-section">
+            <h3>免责声明</h3>
+            <p class="disclaimer">
+              本工具仅供学习和研究使用。使用者应当遵守相关网站的服务条款和法律法规，作者不承担因使用本工具而产生的任何责任。
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- 底部操作栏 -->
+    <footer class="footer">
+      <button class="btn secondary" id="resetSettings">重置设置</button>
+      <div class="footer-right">
+        <button class="btn secondary" id="cancelBtn">取消</button>
+        <button class="btn primary" id="saveBtn">保存设置</button>
+      </div>
+    </footer>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

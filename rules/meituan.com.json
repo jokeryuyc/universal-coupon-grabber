@@ -1,0 +1,120 @@
+{
+  "website": "meituan.com",
+  "name": "美团",
+  "version": "1.0.0",
+  "description": "美团网站适配规则",
+  
+  "capturePatterns": [
+    {
+      "name": "seckill_coupon",
+      "description": "秒杀优惠券",
+      "urlPattern": "/promotion/seckill/couponcomponent/grabcoupon",
+      "method": "POST",
+      "priority": 0.95,
+      "category": "coupon"
+    },
+    {
+      "name": "flash_sale",
+      "description": "闪购秒杀",
+      "urlPattern": "/promotion/seckill/ordercomponent/submit",
+      "method": "POST",
+      "priority": 0.9,
+      "category": "seckill"
+    },
+    {
+      "name": "group_buy",
+      "description": "团购下单",
+      "urlPattern": "/group/v4/deal/commit",
+      "method": "POST",
+      "priority": 0.8,
+      "category": "order"
+    },
+    {
+      "name": "activity_register",
+      "description": "活动报名",
+      "urlPattern": "/activity/register",
+      "method": "POST",
+      "priority": 0.7,
+      "category": "register"
+    }
+  ],
+  
+  "signatureConfig": {
+    "type": "h5guard",
+    "required": true,
+    "fingerprintMethod": "window.H5guard.getfp",
+    "signMethod": "window.H5guard.sign",
+    "headers": {
+      "mtFingerprint": "fingerprint",
+      "mtgsig": "signature"
+    }
+  },
+  
+  "requestConfig": {
+    "defaultHeaders": {
+      "Content-Type": "application/json",
+      "Accept": "application/json, text/plain, */*",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    },
+    "timeout": 5000,
+    "retryDelay": 100
+  },
+  
+  "successConditions": [
+    {
+      "type": "response_code",
+      "value": 200,
+      "weight": 0.3
+    },
+    {
+      "type": "response_body_contains",
+      "value": "success",
+      "weight": 0.4
+    },
+    {
+      "type": "response_body_not_contains",
+      "value": "error",
+      "weight": 0.3
+    }
+  ],
+  
+  "failureConditions": [
+    {
+      "type": "response_body_contains",
+      "value": "已抢完",
+      "action": "stop"
+    },
+    {
+      "type": "response_body_contains",
+      "value": "活动未开始",
+      "action": "wait"
+    },
+    {
+      "type": "response_code",
+      "value": 429,
+      "action": "retry_with_delay"
+    }
+  ],
+  
+  "timeSync": {
+    "enabled": true,
+    "syncUrl": "https://cube.meituan.com/ipromotion/cube/toc/component/base/getServerCurrentTime",
+    "syncInterval": 30000,
+    "offsetKey": "data"
+  },
+  
+  "antiDetection": {
+    "randomDelay": {
+      "enabled": true,
+      "min": 50,
+      "max": 200
+    },
+    "userAgentRotation": {
+      "enabled": false
+    },
+    "headerRandomization": {
+      "enabled": true,
+      "headers": ["Accept-Language", "Accept-Encoding"]
+    }
+  }
+}
