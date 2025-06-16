@@ -11,7 +11,7 @@
     <!-- 头部 -->
     <header class="header">
       <div class="logo">
-        <img src="../icons/icon32.png" alt="UCG">
+        <span class="logo-icon">🎫</span>
         <h1>通用抢券助手</h1>
       </div>
       <div class="status-indicator" id="statusIndicator">
@@ -45,6 +45,7 @@
           <div class="task-stats" id="taskStats">
             <span class="stat-item">总计: <span id="totalTasks">0</span></span>
             <span class="stat-item">运行中: <span id="runningTasks">0</span></span>
+            <button class="clear-btn" id="clearTasksBtn" title="清空所有任务">清空</button>
           </div>
         </div>
         
@@ -75,6 +76,10 @@
 
     <!-- 底部操作栏 -->
     <footer class="footer">
+      <button class="footer-btn" id="openWindowBtn" title="打开独立窗口，不会自动关闭">
+        <span class="icon">🪟</span>
+        独立窗口
+      </button>
       <button class="footer-btn" id="settingsBtn">
         <span class="icon">⚙️</span>
         设置

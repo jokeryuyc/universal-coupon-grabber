@@ -40,15 +40,16 @@ class ContentScriptMain {
     try {
       const rulesUrl = chrome.runtime.getURL(`rules/${this.currentWebsite}.json`);
       const response = await fetch(rulesUrl);
-      
+
       if (response.ok) {
         this.websiteRules = await response.json();
-        console.log('Loaded website rules:', this.websiteRules);
+        console.log(`✅ 成功加载 ${this.currentWebsite} 网站规则:`, this.websiteRules.name);
       } else {
-        console.log('No specific rules found for this website, using defaults');
+        throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
-      console.log('Failed to load website rules:', error);
+      console.log(`📋 ${this.currentWebsite} 使用默认配置`);
+      this.websiteRules = null;
     }
   }
 
@@ -77,17 +78,21 @@ class ContentScriptMain {
 
   async handleMessage(message, sender, sendResponse) {
     try {
+      console.log('Content script received message:', message.type);
+
       switch (message.type) {
         case 'EXECUTE_REQUEST':
           const result = await this.executeRequest(message.data);
           sendResponse(result);
           break;
 
+        case 'START_NETWORK_CAPTURE':
         case 'START_CAPTURE':
           this.startNetworkCapture();
           sendResponse({ success: true });
           break;
 
+        case 'STOP_NETWORK_CAPTURE':
         case 'STOP_CAPTURE':
           this.stopNetworkCapture();
           sendResponse({ success: true });
@@ -103,8 +108,13 @@ class ContentScriptMain {
           sendResponse({ success: true });
           break;
 
+        case 'PING':
+          sendResponse({ success: true, message: 'Content script is active' });
+          break;
+
         default:
-          sendResponse({ success: false, error: 'Unknown message type' });
+          console.warn('Unknown message type in content script:', message.type);
+          sendResponse({ success: false, error: 'Unknown message type: ' + message.type });
       }
     } catch (error) {
       console.error('Content script message handling error:', error);

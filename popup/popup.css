@@ -39,9 +39,13 @@ body {
   gap: 8px;
 }
 
-.logo img {
+.logo-icon {
+  font-size: 24px;
   width: 24px;
   height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .logo h1 {
@@ -337,13 +341,16 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 8px;
+  padding: 6px 4px;
   border: none;
   background: none;
   color: #6b7280;
-  font-size: 10px;
+  font-size: 9px;
   cursor: pointer;
   transition: color 0.2s ease;
+  min-width: 0;
+  flex: 1;
+  position: relative;
 }
 
 .footer-btn:hover {
@@ -351,7 +358,24 @@ body {
 }
 
 .footer-btn .icon {
-  font-size: 16px;
+  font-size: 14px;
+}
+
+/* 独立窗口按钮提示 */
+.footer-btn[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 1000;
+  margin-bottom: 4px;
 }
 
 /* 模态框样式 */

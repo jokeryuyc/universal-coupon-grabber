@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Icon</title>
+</head>
+<body>
+    <canvas id="canvas" width="128" height="128"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 绘制背景
+        ctx.fillStyle = '#4CAF50';
+        ctx.fillRect(0, 0, 128, 128);
+        
+        // 绘制券的形状
+        ctx.fillStyle = '#FFF';
+        ctx.fillRect(16, 32, 96, 64);
+        
+        // 绘制文字
+        ctx.fillStyle = '#4CAF50';
+        ctx.font = 'bold 20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('券', 64, 70);
+        
+        // 下载图标
+        function downloadIcon(size) {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = size;
+            tempCanvas.height = size;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(canvas, 0, 0, size, size);
+            
+            const link = document.createElement('a');
+            link.download = `icon${size}.png`;
+            link.href = tempCanvas.toDataURL();
+            link.click();
+        }
+        
+        // 创建不同尺寸的图标
+        setTimeout(() => {
+            downloadIcon(16);
+            downloadIcon(32);
+            downloadIcon(48);
+            downloadIcon(128);
+        }, 100);
+    </script>
+</body>
+</html>

@@ -25,21 +25,23 @@ class AutoDiscoveryEngine {
 
   async loadAnalysisRules() {
     const hostname = window.location.hostname;
-    
+
     try {
       // 尝试加载当前网站的规则
       const rulesUrl = chrome.runtime.getURL(`rules/${hostname}.json`);
       const response = await fetch(rulesUrl);
-      
+
       if (response.ok) {
         const rules = await response.json();
         this.analysisRules.set(hostname, rules);
-        console.log(`Loaded analysis rules for ${hostname}`);
+        console.log(`✅ 成功加载 ${hostname} 分析规则`);
+      } else {
+        throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
-      console.log(`No specific rules for ${hostname}, using generic patterns`);
+      console.log(`📋 ${hostname} 使用通用分析模式`);
     }
-    
+
     // 加载通用规则
     this.loadGenericRules();
   }

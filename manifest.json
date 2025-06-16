@@ -12,7 +12,7 @@
     "webRequest",
     "webNavigation",
     "tabs",
-    "background"
+    "declarativeNetRequest"
   ],
   
   "host_permissions": [
@@ -24,10 +24,13 @@
     "https://*.jd.com/*",
     "https://api.m.jd.com/*",
     "https://miaosha.jd.com/*",
+    "https://pro.m.jd.com/*",
+    "https://wq.jd.com/*",
     "https://*.pinduoduo.com/*",
     "https://*.yangkeduo.com/*",
     "https://mobile.yangkeduo.com/*",
-    "https://api.yangkeduo.com/*"
+    "https://api.yangkeduo.com/*",
+    "<all_urls>"
   ],
   
   "background": {

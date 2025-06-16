@@ -35,17 +35,29 @@ class NetworkMonitor {
     try {
       const hostname = window.location.hostname;
       const rulesUrl = chrome.runtime.getURL(`rules/${hostname}.json`);
-      
+
       const response = await fetch(rulesUrl);
       if (response.ok) {
         const rules = await response.json();
-        this.captureRules = rules.capturePatterns || [];
-        console.log(`Loaded capture rules for ${hostname}:`, this.captureRules);
+        this.captureRules = this.convertRulesToPatterns(rules.capturePatterns || []);
+        console.log(`✅ 成功加载 ${hostname} 专用规则:`, this.captureRules);
+      } else {
+        throw new Error(`HTTP ${response.status}`);
       }
     } catch (error) {
-      console.log('No specific rules found for this site, using generic patterns');
+      console.log(`📋 ${window.location.hostname} 使用通用规则模式`);
       this.captureRules = this.getGenericPatterns();
     }
+  }
+
+  // 转换规则格式以兼容现有代码
+  convertRulesToPatterns(rules) {
+    return rules.map(rule => ({
+      name: rule.name,
+      urlPattern: new RegExp(rule.urlPattern, 'i'),
+      method: rule.method,
+      priority: rule.priority || 0.5
+    }));
   }
 
   getGenericPatterns() {

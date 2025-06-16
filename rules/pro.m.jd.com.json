@@ -1,0 +1,123 @@
+{
+  "website": "pro.m.jd.com",
+  "name": "京东商城",
+  "version": "1.0.0",
+  "
+": "京东商城抢券规则配置",
+  
+  "capturePatterns": [
+    {
+      "name": "jd_seckill",
+      "urlPattern": "seckillGrab|secKill|flashSale",
+      "method": "POST",
+      "priority": 0.95,
+      "description": "京东秒杀抢券"
+    },
+    {
+      "name": "jd_coupon",
+      "urlPattern": "coupon|优惠券|券|discount",
+      "method": "POST",
+      "priority": 0.9,
+      "description": "京东优惠券"
+    },
+    {
+      "name": "jd_api",
+      "urlPattern": "/api/|api\\.m\\.jd\\.com",
+      "method": "POST",
+      "priority": 0.8,
+      "description": "京东API请求"
+    },
+    {
+      "name": "jd_grab",
+      "urlPattern": "grab|抢|rush|snap",
+      "method": "POST",
+      "priority": 0.85,
+      "description": "京东抢购请求"
+    }
+  ],
+  
+  "analysis_rules": {
+    "seckill_indicators": [
+      "seckillGrab",
+      "secKill",
+      "flashSale",
+      "limitedTime"
+    ],
+    
+    "coupon_indicators": [
+      "coupon",
+      "券",
+      "优惠券",
+      "discount"
+    ],
+    
+    "success_indicators": [
+      "success",
+      "成功",
+      "code\":\"0\"",
+      "code\":0"
+    ],
+    
+    "failure_indicators": [
+      "fail",
+      "失败",
+      "error",
+      "错误",
+      "已抢完",
+      "库存不足"
+    ]
+  },
+  
+  "auto_discovery": {
+    "enabled": true,
+    "confidence_threshold": 0.7,
+    
+    "task_templates": [
+      {
+        "name": "京东抢券",
+        "pattern": "*seckillGrab*",
+        "method": "POST",
+        "headers": {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "Referer": "https://pro.m.jd.com/"
+        },
+        "success_condition": {
+          "type": "response_content",
+          "conditions": [
+            {"field": "code", "operator": "equals", "value": "0"}
+          ]
+        }
+      }
+    ]
+  },
+  
+  "execution_config": {
+    "default_timeout": 15000,
+    "default_retry_attempts": 10,
+    "default_retry_interval": 50,
+    "default_advance_time": 500,
+    
+    "headers": {
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1",
+      "Accept": "application/json, text/plain, */*",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "Accept-Encoding": "gzip, deflate, br",
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+      "Sec-Fetch-Dest": "empty",
+      "Sec-Fetch-Mode": "cors",
+      "Sec-Fetch-Site": "same-site"
+    }
+  },
+  
+  "signature_config": {
+    "adapter": "jd",
+    "enabled": true,
+    "parameters": [
+      "functionId",
+      "body",
+      "appid",
+      "loginType"
+    ]
+  }
+}
